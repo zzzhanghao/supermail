@@ -1,9 +1,10 @@
 <template>
-   <div class="ad">
+ <div class="ad">
+     <img src="~assets/image/recommend_bg.jpg" alt="">
      <a href="https://act.mogujie.com/zzlx67">
-       <img src="~assets/image/recommend_bg.jpg" alt="">
+       
      </a>
-   </div>
+</div>
 </template>
 
 <script>
@@ -23,5 +24,6 @@ export default {
 <style lang='css' scoped>
   .ad img{
     width: 100%;
+
   }
 </style>

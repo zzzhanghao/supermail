@@ -2,6 +2,11 @@
   <!-- template只包含一个根元素,所以用一个 div括起来 -->
     <div id="home">
       <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+      <tab-control 
+        :title="['流行','新款','精选']"  
+        @tabindex="tabindex"
+        ref="tabcontrol" class="tabcontrol" v-show="isTabFixed"
+        />
       <scroll 
       class="content" 
       ref="scroll" 
@@ -9,11 +14,15 @@
       @distance = 'contentScroll'
       :pullUpLoad = 'true'
       @pull = 'pageUpdate'>
-        <home-super :banners = 'banners' class="home-super"></home-super>
+        <home-super :banners = 'banners' class="home-super" @swiperimageLoad='swiperimageLoad'></home-super>
         <recommend-view :recommend="recommends"/>
-        <adver-tising/>
+        <adver-tising></adver-tising>
         <!-- 注意的是 所有的$emit传来的方法都需要用 v-on来进行监听 -->
-        <tab-control :title="['流行','新款','精选']" class="tab-control" @tabindex="tabindex"/>
+        <tab-control 
+        :title="['流行','新款','精选']"  
+        @tabindex="tabindex"
+        ref="tabcontrol"
+        />
         <goods-list :goodslist="showGoods"></goods-list>
       </scroll>
       <back-top @click.native="btnclick" v-show="isShowBackTop"/>
@@ -57,13 +66,21 @@ import BackTop from 'components/common/backTop/BackTop'
           'sell': {page: 0, list: []},
                 },
         currentType:'pop',
-        isShowBackTop: false
+        isShowBackTop: false,
+        taboffsetTop: 0,
+        isTabFixed: false
        }}, 
     computed:{
       //抽象出 这个本来绑定在 监听事件里面的方法
       showGoods(){
         return this.goods[this.currentType].list
       }
+    },
+    mounted(){
+
+    },
+    destroyed(){
+      console.log('销毁了');
     },
     created() {
       // 1.请求多个数据
@@ -95,6 +112,9 @@ import BackTop from 'components/common/backTop/BackTop'
           })
           
       },
+       /**
+       * 事件监听相关的方法
+       */
        tabindex(index){
         switch(index){
           case 0:
@@ -113,19 +133,27 @@ import BackTop from 'components/common/backTop/BackTop'
       },
       contentScroll(position){
         this.isShowBackTop = -position.y > 700
-
+        this.isTabFixed = -position.y > this.taboffsetTop
       },
       //上拉加载更多
       pageUpdate(){
-        console.log(333)
         this.getHomeGoods(this.currentType)
         
-        }
       },
-      /**
-       * 事件监听相关的方法
-       */
-     
+      //监听tabcontrol到最上面的距离
+      swiperimageLoad(){
+        this.taboffsetTop = this.$refs.tabcontrol.$el.offsetTop
+        console.log(this.taboffsetTop);
+      }
+      
+      
+      
+      
+      },
+      
+      
+      
+  
   }
 </script>
 
@@ -144,12 +172,7 @@ import BackTop from 'components/common/backTop/BackTop'
     position: relative;
   
   }
-  .tab-control{
-     position: sticky;
-     background-color: pink;
-     top: 44px;
-     z-index: 9;
-  }
+
   .content{
    position: absolute;
    top: 44px;
@@ -157,7 +180,13 @@ import BackTop from 'components/common/backTop/BackTop'
    left: 0;
    right: 0;
   }
-
+  .tabcontrol{
+    z-index: 10;
+    position: fixed;
+    top: 44px;
+    left: 0;
+    right: 0;
+  }
 </style>
 
 

@@ -2,7 +2,7 @@
      <swiper>
       <swiper-item v-for="item in banners" :key="item.label" >
         <a :href="item.link">
-        <img :src="item.image" alt="">
+         <img :src="item.image" alt="" @load="imageLoad">
       </a>
       </swiper-item>
     </swiper>
@@ -15,7 +15,7 @@ export default {
    name: 'HomeSuper',
    data () {
       return {
-        
+        isLoad: false
       };
    },
    props:{
@@ -33,7 +33,16 @@ export default {
 
    computed: {},
 
-   methods: {}
+   methods: {
+     //监听图片的加载完成
+     imageLoad(){
+       if(!this.isLoad){
+         this.$emit('swiperimageLoad')
+         this.isLoad = true
+       }
+       
+     }
+   }
 }
 </script>
 <style lang='css' scoped>
